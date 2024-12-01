@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reporte de Horas Extras</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+    <nav class="navbar bg-dark border-bottom border-body" data-bs-theme="dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <div class="d-flex justify-content-end align-items-center mb-3">
+                    <label for="totalHoras" class="form-label me-2"><strong>Total de Horas:</strong></label>
+                    <input type="text" id="totalHoras" class="form-control w-auto" value="0" disabled>
+                </div>
+                
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarText">
+              <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                  <a class="nav-link active" aria-current="page" href="#">Inicio</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#">Proximamente</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#">Proximamente</a>
+                </li>
+              </ul>
+              <span class="navbar-text">
+                Aqui ira un menu donde pueda ver sus archivos creados anteriormente
+              </span>
+            </div>
+          </div>
+      </nav>
+
+    <div class="container mt-4">
+        
+        <h1 class="text-center mb-4">Reporte de Horas Extras</h1>
+        
+        <!-- Información del Usuario -->
+        <div class="card p-4 mb-4 shadow-sm">
+            <h2 class="text-center mb-3">Información del Usuario</h2>
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label for="nombre" class="form-label">Nombre Completo</label>
+                    <input type="text" id="nombre" class="form-control" placeholder="No definido" disabled>
+                </div>
+                <div class="col-md-4">
+                    <label for="compania" class="form-label">Compañía</label>
+                    <input type="text" id="compania" class="form-control" placeholder="No definido" disabled>
+                </div>
+                <div class="col-md-4">
+                    <label for="cuentaNomina" class="form-label">Número de Cuenta Nómina</label>
+                    <input type="text" id="cuentaNomina" class="form-control" placeholder="No definido" disabled>
+                </div>
+            </div>
+            <div class="text-center mt-3">
+                <button id="btnActualizarUsuario" class="btn btn-warning">Actualizar Información</button>
+            </div>
+        </div>
+
+        <!-- Formulario -->
+        <form class="card p-4 shadow-sm">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label for="fecha" class="form-label">Fecha</label>
+                    <input type="date" id="fecha" class="form-control" required>
+                </div>
+                <div class="col-md-6">
+                    <label for="horaInicio" class="form-label">Hora Inicio</label>
+                    <input type="time" id="horaInicio" class="form-control">
+                </div>
+                <div class="col-md-6">
+                    <label for="horaFin" class="form-label">Hora Fin</label>
+                    <input type="time" id="horaFin" class="form-control">
+                </div>
+                <div class="col-md-6">
+                    <label for="lugarTrabajo" class="form-label">Lugar de Trabajo</label>
+                    <input type="text" id="lugarTrabajo" class="form-control" required>
+                </div>
+                <div class="col-12">
+                    <label for="comentarios" class="form-label">Comentarios</label>
+                    <input type="text" id="comentarios" class="form-control">
+                </div>
+            </div>
+            <div class="text-center mt-3">
+                <button type="button" id="agregarFila" class="btn btn-primary">Agregar Fila</button>
+                <button type="button" id="agregarActividad" class="btn btn-secondary">Actividad</button>
+            </div>
+        </form>
+
+       
+
+        <!-- Tabla -->
+        <div class="table-responsive mt-4">
+            <table id="tabla-horas" class="table table-bordered table-striped shadow-sm">
+                <thead class="table-primary text-center">
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Hora Inicio</th>
+                        <th>Hora Fin</th>
+                        <th>Horas Trabajadas</th>
+                        <th>Lugar de Trabajo</th>
+                        <th>Comentarios</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <!-- Botón Exportar -->
+        <div class="text-center mt-3">
+            <button id="exportarExcel" class="btn btn-success">Exportar a Excel y Guardar en Google Sheets</button>
+        </div>
+    </div>
+
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+    <script>
+
+
+         // Función para calcular el total de horas trabajadas
+    function calcularTotalHoras() {
+        const tabla = document.getElementById('tabla-horas').querySelector('tbody');
+        const filas = tabla.querySelectorAll('tr');
+        let totalHoras = 0;
+
+        filas.forEach(fila => {
+            const horasTrabajadas = parseFloat(fila.cells[3].innerText) || 0;
+            totalHoras += horasTrabajadas;
+        });
+
+        document.getElementById('totalHoras').value = totalHoras.toFixed(2); // Mostrar con dos decimales
+    }
+
+        // Función para cargar datos almacenados
+        function cargarDatos() {
+            // Cargar información del usuario
+            const usuario = JSON.parse(localStorage.getItem('usuario'));
+            if (usuario) {
+                document.getElementById('nombre').value = usuario.nombre || "No definido";
+                document.getElementById('compania').value = usuario.compania || "No definido";
+                document.getElementById('cuentaNomina').value = usuario.cuentaNomina || "No definido";
+            }
+    
+            // Cargar datos de la tabla
+            const tablaHoras = JSON.parse(localStorage.getItem('tablaHoras')) || [];
+            const tabla = document.getElementById('tabla-horas').querySelector('tbody');
+            tabla.innerHTML = ''; // Limpiar tabla
+            tablaHoras.forEach(fila => {
+                const nuevaFila = tabla.insertRow();
+                nuevaFila.innerHTML = `
+                    <td>${fila.fecha}</td>
+                    <td>${fila.horaInicio}</td>
+                    <td>${fila.horaFin}</td>
+                    <td>${fila.horasTrabajadas}</td>
+                    <td>${fila.lugarTrabajo}</td>
+                    <td>${fila.comentarios}</td>
+                `;
+            });
+
+            calcularTotalHoras(); //calcular total horas
+        }
+    
+        // Guardar información del usuario
+        document.getElementById('btnActualizarUsuario').addEventListener('click', () => {
+            const nombre = prompt("Ingresa tu nombre completo:");
+            const compania = prompt("Ingresa el nombre de tu compañía:");
+            const cuentaNomina = prompt("Ingresa tu número de cuenta nómina:");
+    
+            if (nombre || compania || cuentaNomina) {
+                const usuario = { nombre, compania, cuentaNomina };
+                localStorage.setItem('usuario', JSON.stringify(usuario));
+                cargarDatos();
+            }
+        });
+    
+        // Agregar fila a la tabla
+        function agregarFila(fecha, horaInicio, horaFin, horasTrabajadas, lugarTrabajo, comentarios) {
+            const tabla = document.getElementById('tabla-horas').querySelector('tbody');
+            const nuevaFila = tabla.insertRow();
+            nuevaFila.innerHTML = `
+                <td>${fecha}</td>
+                <td>${horaInicio}</td>
+                <td>${horaFin}</td>
+                <td>${horasTrabajadas}</td>
+                <td>${lugarTrabajo}</td>
+                <td>${comentarios}</td>
+            `;
+    
+            // Guardar la tabla en Local Storage
+            const tablaHoras = JSON.parse(localStorage.getItem('tablaHoras')) || [];
+            tablaHoras.push({ fecha, horaInicio, horaFin, horasTrabajadas, lugarTrabajo, comentarios });
+            localStorage.setItem('tablaHoras', JSON.stringify(tablaHoras));
+        }
+    
+        // Lógica para agregar filas de horas extras
+        document.getElementById('agregarFila').addEventListener('click', () => {
+            const fecha = document.getElementById('fecha').value;
+            const horaInicio = document.getElementById('horaInicio').value;
+            const horaFin = document.getElementById('horaFin').value;
+            const lugarTrabajo = document.getElementById('lugarTrabajo').value;
+            const comentarios = document.getElementById('comentarios').value;
+    
+            if (fecha && horaInicio && horaFin && lugarTrabajo) {
+                const horasTrabajadas = calcularHoras(horaInicio, horaFin);
+    
+                if (horasTrabajadas < 0) {
+                    alert("Error: Valide que las horas trabajadas esten correctas.");
+                    return;
+                }
+    
+                agregarFila(fecha, horaInicio, horaFin, horasTrabajadas, lugarTrabajo, comentarios);
+                limpiarFormulario(); // Limpiar formulario después de agregar fila
+                calcularTotalHoras(); //calcular total horas
+
+            } else {
+                alert('Por favor, completa todos los campos requeridos.');
+            }
+        });
+    
+        // Lógica para agregar filas de actividades
+        document.getElementById('agregarActividad').addEventListener('click', () => {
+            const fecha = document.getElementById('fecha').value;
+            const horasTrabajadas = prompt("Ingrese las horas trabajadas:");
+            const lugarTrabajo = document.getElementById('lugarTrabajo').value;
+            const comentarios = document.getElementById('comentarios').value;
+    
+            if (fecha && horasTrabajadas && lugarTrabajo) {
+                if (horasTrabajadas < 0) {
+                    alert("Error: Las horas trabajadas no pueden ser negativas.");
+                    return;
+                }
+    
+                agregarFila(fecha, "00:00", "00:00", horasTrabajadas, lugarTrabajo, comentarios);
+                limpiarFormulario(); // Limpiar formulario después de agregar actividad
+                calcularTotalHoras(); //calcular total horas
+
+            } else {
+                alert('Por favor, completa todos los campos requeridos para la actividad.');
+            }
+        });
+    
+        // Calcular horas trabajadas
+        function calcularHoras(horaInicio, horaFin) {
+            const [inicioHoras, inicioMinutos] = horaInicio.split(':').map(Number);
+            const [finHoras, finMinutos] = horaFin.split(':').map(Number);
+    
+            const totalHoras = finHoras - inicioHoras;
+            const totalMinutos = finMinutos - inicioMinutos;
+    
+            return totalHoras + (totalMinutos / 60);
+        }
+    
+        // Función para limpiar formulario
+        function limpiarFormulario() {
+            document.getElementById('fecha').value = '';
+            document.getElementById('horaInicio').value = '';
+            document.getElementById('horaFin').value = '';
+            document.getElementById('lugarTrabajo').value = '';
+            document.getElementById('comentarios').value = '';
+        }
+
+        //Funcion para exportar a excel
+
+        document.getElementById('exportarExcel').addEventListener('click', () => {
+            // Mostrar cuadro de confirmación
+            const confirmar = confirm("¿Estás seguro de que deseas exportar los datos a Excel?");
+            
+            if (!confirmar) {
+                // Si el usuario cancela, no se ejecuta la exportación
+                return;
+            }
+        
+            const tabla = document.getElementById('tabla-horas');
+            const rows = [...tabla.rows].map(row => [...row.cells].map(cell => cell.innerText));
+        
+            // Información del usuario
+            const infoUsuario = [
+                ["FECHA REPORTE:", new Date().toLocaleDateString()],
+                ["NOMBRE:", document.getElementById('nombre').value || "No definido"],
+                ["NO. CUENTA:", document.getElementById('cuentaNomina').value || "No definido"],
+                ["EMPRESA:", document.getElementById('compania').value || "No definido"],
+                []
+            ];
+        
+            // Encabezados de la tabla
+            const encabezados = ["FECHA", "HORA IN", "HORA FIN", "HORAS TRAB", "LUGAR DE TRABAJO", "COMENTARIOS"];
+        
+            // Extraer filas de la tabla
+            const datosTabla = [...tabla.querySelector('tbody').rows].map(row => {
+                const celdas = [...row.cells].map(cell => cell.innerText);
+                return celdas;
+            });
+        
+            // Calcular total de horas trabajadas
+            const totalHoras = datosTabla.reduce((sum, fila) => sum + (parseFloat(fila[3]) || 0), 0);
+            datosTabla.push(["", "", "", `Total: ${totalHoras.toFixed(2)}`, "", ""]);
+        
+            // Unir todos los datos para el Excel
+            const datosExcel = [...infoUsuario, encabezados, ...datosTabla];
+        
+            // Crear la hoja de Excel
+            const workbook = XLSX.utils.book_new();
+            const worksheet = XLSX.utils.aoa_to_sheet(datosExcel);
+        
+            // Ajustar el rango y aplicar estilos
+            const rangoTotal = XLSX.utils.decode_range(worksheet["!ref"]);
+        
+            for (let row = rangoTotal.s.r; row <= rangoTotal.e.r; row++) {
+                for (let col = rangoTotal.s.c; col <= rangoTotal.e.c; col++) {
+                    const celdaRef = XLSX.utils.encode_cell({ r: row, c: col });
+                    if (!worksheet[celdaRef]) continue; // Ignorar celdas vacías
+        
+                    // Aplicar estilos base a todas las celdas
+                    worksheet[celdaRef].s = {
+                        font: { name: "Arial", sz: 12 }, // Fuente Arial, tamaño 12
+                        alignment: { vertical: "center", horizontal: "center" }, // Alineación centrada
+                        border: {
+                            top: { style: "thin" },
+                            bottom: { style: "thin" },
+                            left: { style: "thin" },
+                            right: { style: "thin" },
+                        }, // Bordes visibles
+                    };
+        
+                    // Estilizar encabezados
+                    if (row === infoUsuario.length) {
+                        worksheet[celdaRef].s.fill = { fgColor: { rgb: "D9E2F3" } }; // Fondo azul claro
+                        worksheet[celdaRef].s.font = { bold: true }; // Texto en negrita
+                    }
+                }
+            }
+        
+            // Ajustar el ancho de columnas
+            worksheet["!cols"] = [
+                { wch: 20 }, // FECHA
+                { wch: 15 }, // HORA IN
+                { wch: 15 }, // HORA FIN
+                { wch: 15 }, // HORAS TRAB
+                { wch: 30 }, // LUGAR DE TRABAJO
+                { wch: 30 }, // COMENTARIOS
+            ];
+        
+            // Obtener la fecha actual en formato YYYY-MM-DD
+            const fechaActual = new Date();
+            const fechaFormateada = `${fechaActual.getFullYear()}-${String(fechaActual.getMonth() + 1).padStart(2, '0')}-${String(fechaActual.getDate()).padStart(2, '0')}`;
+        
+            // Nombre del archivo con la fecha
+            const nombreArchivo = `Reporte_Horas_Extras_${fechaFormateada}.xlsx`;
+        
+            // Exportar el archivo
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Reporte Horas Extras");
+            XLSX.writeFile(workbook, nombreArchivo);
+        
+            // Borrar la tabla del Local Storage
+            localStorage.removeItem('tablaHoras');
+        
+            // Limpiar la tabla de la página
+            const tablaBody = tabla.querySelector('tbody');
+            tablaBody.innerHTML = '';
+        
+            // Actualizar el total de horas en la interfaz
+            document.getElementById('totalHoras').value = "0.00";
+        
+            alert("Exportación completada. Los datos han sido eliminados.");
+        });
+        
+        
+    
+        // Cargar datos al inicio
+        cargarDatos();
+    </script>
+    
+</body>
+</html>
