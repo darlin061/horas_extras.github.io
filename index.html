@@ -173,7 +173,18 @@
 function actualizarMontoTotal() {
     const totalHoras = parseFloat(document.getElementById('totalHoras').value) || 0;
     const totalDinero = totalHoras * 150; // Multiplicar por 150
-    document.getElementById('montoTotal').value = totalDinero.toFixed(2); // Mostrar con dos decimales
+
+    // Actualizar el input con ID 'montoTotal'
+    const inputMontoTotal = document.querySelector('input#montoTotal');
+    if (inputMontoTotal) {
+        inputMontoTotal.value = totalDinero.toFixed(2); // Mostrar con dos decimales
+    }
+
+    // Actualizar el span dentro de la wallet balance
+    const walletBalanceElement = document.querySelector('.balancewrapper #montoTotal');
+    if (walletBalanceElement) {
+        walletBalanceElement.textContent = totalDinero.toFixed(2); // Actualizar con el monto total
+    }
 }
 
 // Modifica calcularTotalHoras para incluir esta función
