@@ -133,20 +133,28 @@
 
     <script>
 
+// Función para calcular el total en dinero
+function actualizarMontoTotal() {
+    const totalHoras = parseFloat(document.getElementById('totalHoras').value) || 0;
+    const totalDinero = totalHoras * 150; // Multiplicar por 150
+    document.getElementById('montoTotal').value = totalDinero.toFixed(2); // Mostrar con dos decimales
+}
 
-         // Función para calcular el total de horas trabajadas
-    function calcularTotalHoras() {
-        const tabla = document.getElementById('tabla-horas').querySelector('tbody');
-        const filas = tabla.querySelectorAll('tr');
-        let totalHoras = 0;
+// Modifica calcularTotalHoras para incluir esta función
+function calcularTotalHoras() {
+    const tabla = document.getElementById('tabla-horas').querySelector('tbody');
+    const filas = tabla.querySelectorAll('tr');
+    let totalHoras = 0;
 
-        filas.forEach(fila => {
-            const horasTrabajadas = parseFloat(fila.cells[3].innerText) || 0;
-            totalHoras += horasTrabajadas;
-        });
+    filas.forEach(fila => {
+        const horasTrabajadas = parseFloat(fila.cells[3].innerText) || 0;
+        totalHoras += horasTrabajadas;
+    });
 
-        document.getElementById('totalHoras').value = totalHoras.toFixed(2); // Mostrar con dos decimales
-    }
+    document.getElementById('totalHoras').value = totalHoras.toFixed(2); // Mostrar con dos decimales
+    actualizarMontoTotal(); // Actualizar monto total en dinero
+}
+
 
         // Función para cargar datos almacenados
         function cargarDatos() {
