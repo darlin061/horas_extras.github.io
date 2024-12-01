@@ -1,0 +1,66 @@
+.walletBalanceCard {
+    width: fit-content;
+    height: 55px;
+    background-color: #1c1f2f;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 12px;
+    padding: 0px 12px;
+    font-family: Arial, Helvetica, sans-serif;
+}
+.svgwrapper {
+    width: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.svgwrapper svg {
+    width: 100%;
+}
+.balancewrapper {
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    flex-direction: column;
+    width: 120px;
+    gap: 0px;
+}
+.balanceHeading {
+    font-size: 8px;
+    color: rgb(214, 214, 214);
+    font-weight: 100;
+    letter-spacing: 0.6px;
+}
+.balance {
+    font-size: 13.5px;
+    color: white;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.addmoney {
+    padding: 1px 15px;
+    border-radius: 20px;
+    background-color: #c083eb;
+    color: white;
+    border: none;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+}
+.addmoney:hover {
+    background-color: whitesmoke;
+    color: #9c59cc;
+}
+.plussign {
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
